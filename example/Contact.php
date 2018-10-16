@@ -66,8 +66,8 @@ $user->setEmail("eric@email.com");
 $user->setName("Eric");
 
 $data = [
-    "name" => "toto",
-    "email" => "toto@titi.com",
+    "name" => "Sonia",
+    "email" => "sonia@email.com",
     "genre" => "female"
 ];
 
