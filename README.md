@@ -40,7 +40,7 @@ Now, you can generate an array from your object :
 ```
     var_dump($user->toArray());
 ```
-And you can hydrate your object with an array : You can block the property usage and force method usage with :
+And you can hydrate your object with an array :
 
 ```
     $user->hydrate([
