@@ -1,13 +1,13 @@
-##Hydrator
+## Hydrator
 
 Simple hydration mechanism.
 Use the PHP trait to not block inheritance on your classes.
 
-####Installation : 
+#### Installation : 
 
 composer require tobinfree/hydrator
 
-####Usage:
+#### Usage:
 
 Add trait in your class :
 ```
@@ -49,6 +49,6 @@ And you can hydrate your object with an array : You can block the property usage
     ]);
     
 ```
-####License
+#### License
 
 This bundle is under the MIT license. See the complete license in the bundle.
