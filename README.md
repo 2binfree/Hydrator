@@ -17,13 +17,24 @@ Class User
 {
     use Hydrator;
 
+    /**
+    * @var int
+    */
+    private $id;
+
+    /**
+    * @var string
+    */
     private $name;
+
+    /**
+    * @var string
+    */
     private $email;
     ...
 }
   
 ```  
-
 Hydrator search all accessors and mutators methods from class properties.
 If the methods are not found, the property will be used directly.
 
@@ -40,6 +51,37 @@ Now, you can generate an array from your object :
 ```
     var_dump($user->toArray());
 ```
+You can specify witch properties will be generated using annotation @DataProperty :
+```
+use ToBinFree\Hydrator\Hydrator;
+
+Class User 
+{
+    use Hydrator;
+    
+    /**
+    * @var int
+    */
+    private $id
+
+    /**
+    * @var string
+    * @DataProperty
+    */
+    private $name;
+
+    /**
+    * @var string
+    * @DataProperty
+    */
+    private $email;
+    ...
+}
+```
+```
+    var_dump($user->toArray(true));
+```
+
 And you can hydrate your object with an array :
 
 ```

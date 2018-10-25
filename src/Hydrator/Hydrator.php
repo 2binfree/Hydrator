@@ -24,11 +24,17 @@ trait Hydrator
         $this->___hydratorObjectProperties = [];
         $thisClass = new \ReflectionClass($this);
         $properties = $thisClass->getProperties();
-        foreach ($properties as $property => $value) {
-            $name = $value->getName();
+        foreach ($properties as $property) {
+            $name = $property->getName();
+            $comment = $property->getDocComment();
             if (false === strpos($name, $this->___hydratorFootPrint)) {
                 $getMethod = "get" . ucfirst($name);
                 $setMethod = "set" . ucfirst($name);
+                if (false !== strpos($comment, "@DataProperty")) {
+                    $this->___hydratorObjectProperties[$name]["type"] = "@DataProperty";
+                } else {
+                    $this->___hydratorObjectProperties[$name]["type"] = "undefined";
+                }
                 if ($thisClass->hasMethod($getMethod)) {
                     $this->___hydratorObjectProperties[$name]["get"] = $getMethod;
                 } else {
@@ -71,7 +77,7 @@ trait Hydrator
      * @param array $data
      * @throws \ReflectionException
      */
-    public function hydrate(array $data)
+    public function hydrate(array $data):void
     {
         if (empty($this->___hydratorObjectProperties)) {
             $this->initMethods();
@@ -89,22 +95,25 @@ trait Hydrator
     }
 
     /**
+     * @param bool $dataOnly
      * @return array
      * @throws \ReflectionException
      */
-    public function toArray()
+    public function toArray(bool $dataOnly = false):array
     {
         $result = [];
         if (empty($this->___hydratorObjectProperties)) {
             $this->initMethods();
         }
-        foreach ($this->___hydratorObjectProperties as $name => $methods) {
-            if (isset($methods["get"])) {
-                $method = $methods["get"];
-                if ("get" === substr($method, 0, 3)) {
-                    $result[$name] = $this->$method();
-                } else {
-                    $result[$name] = $this->$method;
+        foreach ($this->___hydratorObjectProperties as $name => $attributes) {
+            if (false === $dataOnly || "@DataProperty" === $attributes["type"]) {
+                if (isset($attributes["get"])) {
+                    $method = $attributes["get"];
+                    if ("get" === substr($method, 0, 3)) {
+                        $result[$name] = $this->$method();
+                    } else {
+                        $result[$name] = $this->$method;
+                    }
                 }
             }
         }

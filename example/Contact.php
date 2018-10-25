@@ -8,13 +8,27 @@ class Contact
 {
     use Hydrator;
 
-    /** @var string */
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @DataProperty
+     */
     private $name;
 
-    /** @var string */
+    /**
+     * @var string
+     * @DataProperty
+     */
     private $email;
 
-    /** @var string */
+    /**
+     * @var string
+     * @DataProperty
+     */
     private $genre;
 
     public function __construct()
