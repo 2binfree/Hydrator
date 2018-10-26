@@ -11,11 +11,13 @@ class HydratorTest extends TestCase
     public function testToArray()
     {
         $user = new User();
+        $user->setId(1);
         $user->setName("Jean");
         $user->setEmail("jean@email.com");
         $this->assertEquals(
             [
-                "name" => "Jean",
+                "id"    => 1,
+                "name"  => "Jean",
                 "email" => "jean@email.com",
                 "genre" => "male"
             ],
@@ -26,15 +28,36 @@ class HydratorTest extends TestCase
     /**
      * @throws ReflectionException
      */
-    public function testToArrayStrict()
+    public function testToArrayData()
     {
         $user = new User();
-        $user->setAccessorOnly(true);
+        $user->setId(1);
         $user->setName("Jean");
         $user->setEmail("jean@email.com");
         $this->assertEquals(
             [
-                "name" => "Jean",
+                "name"  => "Jean",
+                "email" => "jean@email.com",
+                "genre" => "male"
+            ],
+            $user->toArray(true)
+        );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function testToArrayStrict()
+    {
+        $user = new User();
+        $user->setAccessorOnly(true);
+        $user->setId(1);
+        $user->setName("Jean");
+        $user->setEmail("jean@email.com");
+        $this->assertEquals(
+            [
+                "id"    => 1,
+                "name"  => "Jean",
                 "email" => "jean@email.com",
             ],
             $user->toArray()
@@ -48,13 +71,15 @@ class HydratorTest extends TestCase
     {
         $user = new User();
         $user->hydrate([
-            "name" => "Sonia",
+            "id"    => 1,
+            "name"  => "Sonia",
             "email" => "sonia@email.com",
             "genre" => "female"
         ]);
         $this->assertEquals(
             [
-                "name" => "Sonia",
+                "id"    => 1,
+                "name"  => "Sonia",
                 "email" => "sonia@email.com",
                 "genre" => "female"
             ],
@@ -70,13 +95,15 @@ class HydratorTest extends TestCase
         $user = new User();
         $user->setMutatorOnly(true);
         $user->hydrate([
-            "name" => "Sonia",
+            "id"    => 1,
+            "name"  => "Sonia",
             "email" => "sonia@email.com",
             "genre" => "female"
         ]);
         $this->assertEquals(
             [
-                "name" => "Sonia",
+                "id"    => 1,
+                "name"  => "Sonia",
                 "email" => "sonia@email.com",
                 "genre" => "male"
             ],

@@ -8,18 +8,48 @@ class User
 {
     use Hydrator;
 
-    /** @var string */
+    /** @var int */
+    private $id;
+
+    /**
+     * @var string
+     * @DataProperty
+     */
     private $name;
 
-    /** @var string */
+    /**
+     * @var string
+     * @DataProperty
+     */
     private $email;
 
-    /** @var string */
+    /**
+     * @var string
+     * @DataProperty
+     */
     private $genre;
 
     public function __construct()
     {
         $this->genre = "male";
+    }
+
+    /**
+     * @return null|int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return User
+     */
+    public function setId(int $id): User
+    {
+        $this->id = $id;
+        return $this;
     }
 
     /**
