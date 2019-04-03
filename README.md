@@ -5,8 +5,8 @@ Use the PHP trait to not block inheritance on your classes.
 
 ## ChangeLog
 
-1.0.0 : initial version
-1.0.1 : add support of properties of all parent classes
+* 0.1.0 : initial version
+* 0.2.0 : add support of properties of all parent classes
  
 #### Installation : 
 
