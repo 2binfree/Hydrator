@@ -4,7 +4,7 @@ namespace ToBinFree\Test;
 
 use ToBinFree\Hydrator\Hydrator;
 
-class User
+class User extends BaseUser
 {
     use Hydrator;
 
@@ -31,6 +31,7 @@ class User
 
     public function __construct()
     {
+        parent::__construct();
         $this->genre = "male";
     }
 

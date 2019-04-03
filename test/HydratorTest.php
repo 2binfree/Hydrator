@@ -19,7 +19,9 @@ class HydratorTest extends TestCase
                 "id"    => 1,
                 "name"  => "Jean",
                 "email" => "jean@email.com",
-                "genre" => "male"
+                "genre" => "male",
+                "type"  => "contact",
+                "cardId"=> null,
             ],
             $user->toArray()
         );
@@ -38,7 +40,8 @@ class HydratorTest extends TestCase
             [
                 "name"  => "Jean",
                 "email" => "jean@email.com",
-                "genre" => "male"
+                "genre" => "male",
+                "type"  => "contact",
             ],
             $user->toArray(true)
         );
@@ -59,6 +62,8 @@ class HydratorTest extends TestCase
                 "id"    => 1,
                 "name"  => "Jean",
                 "email" => "jean@email.com",
+                "type"  => "contact",
+                "cardId"=> null,
             ],
             $user->toArray()
         );
@@ -74,14 +79,18 @@ class HydratorTest extends TestCase
             "id"    => 1,
             "name"  => "Sonia",
             "email" => "sonia@email.com",
-            "genre" => "female"
+            "genre" => "female",
+            "type"  => "contact",
+            "cardId"=> 555,
         ]);
         $this->assertEquals(
             [
                 "id"    => 1,
                 "name"  => "Sonia",
                 "email" => "sonia@email.com",
-                "genre" => "female"
+                "genre" => "female",
+                "type"  => "contact",
+                "cardId"=> 555,
             ],
             $user->toArray()
         );
@@ -98,14 +107,17 @@ class HydratorTest extends TestCase
             "id"    => 1,
             "name"  => "Sonia",
             "email" => "sonia@email.com",
-            "genre" => "female"
+            "genre" => "female",
+            "type"  => "contact",
         ]);
         $this->assertEquals(
             [
                 "id"    => 1,
                 "name"  => "Sonia",
                 "email" => "sonia@email.com",
-                "genre" => "male"
+                "genre" => "male",
+                "type"  => "contact",
+                "cardId"=> null,
             ],
             $user->toArray()
         );

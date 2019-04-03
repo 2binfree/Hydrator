@@ -3,6 +3,11 @@
 Simple hydration mechanism.
 Use the PHP trait to not block inheritance on your classes.
 
+## ChangeLog
+
+1.0.0 : initial version
+1.0.1 : add support of properties of all parent classes
+ 
 #### Installation : 
 
 composer require tobinfree/hydrator

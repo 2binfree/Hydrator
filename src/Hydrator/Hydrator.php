@@ -24,6 +24,11 @@ trait Hydrator
         $this->___hydratorObjectProperties = [];
         $thisClass = new \ReflectionClass($this);
         $properties = $thisClass->getProperties();
+        $parent = $thisClass->getParentClass();
+        while (false !== $parent) {
+            $properties = array_merge($properties, $parent->getProperties());
+            $parent = $parent->getParentClass();
+        }
         foreach ($properties as $property) {
             $name = $property->getName();
             $comment = $property->getDocComment();
