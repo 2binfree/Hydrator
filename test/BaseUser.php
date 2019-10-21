@@ -57,10 +57,10 @@ class BaseUser
     }
 
     /**
-     * @param int $cardId
+     * @param int|null $cardId
      * @return BaseUser
      */
-    public function setCardId(int $cardId): BaseUser
+    public function setCardId(?int $cardId): BaseUser
     {
         $this->cardId = $cardId;
         return $this;

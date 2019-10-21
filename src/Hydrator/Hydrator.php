@@ -2,6 +2,8 @@
 
 namespace ToBinFree\Hydrator;
 
+use ReflectionException;
+
 trait Hydrator
 {
     /** @var string */
@@ -17,7 +19,7 @@ trait Hydrator
     private $___hydratorMutatorOnly = false;
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function initMethods()
     {
@@ -80,20 +82,23 @@ trait Hydrator
 
     /**
      * @param array $data
-     * @throws \ReflectionException
+     * @param bool $withNullValue
+     * @throws ReflectionException
      */
-    public function hydrate(array $data):void
+    public function hydrate(array $data, $withNullValue = true):void
     {
         if (empty($this->___hydratorObjectProperties)) {
             $this->initMethods();
         }
         foreach ($data as $key => $value) {
-            if (isset($this->___hydratorObjectProperties[$key]["set"])) {
-                $method = $this->___hydratorObjectProperties[$key]["set"];
-                if ("set" === substr($method, 0, 3)) {
-                    $this->$method($value);
-                } else {
-                    $this->$method = $value;
+            if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
+                if (isset($this->___hydratorObjectProperties[$key]["set"])) {
+                    $method = $this->___hydratorObjectProperties[$key]["set"];
+                    if ("set" === substr($method, 0, 3)) {
+                        $this->$method($value);
+                    } else {
+                        $this->$method = $value;
+                    }
                 }
             }
         }
@@ -101,10 +106,11 @@ trait Hydrator
 
     /**
      * @param bool $dataOnly
+     * @param bool $withNullValue
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public function toArray(bool $dataOnly = false):array
+    public function toArray(bool $dataOnly = false, $withNullValue = true):array
     {
         $result = [];
         if (empty($this->___hydratorObjectProperties)) {
@@ -115,9 +121,12 @@ trait Hydrator
                 if (isset($attributes["get"])) {
                     $method = $attributes["get"];
                     if ("get" === substr($method, 0, 3)) {
-                        $result[$name] = $this->$method();
+                        $value = $this->$method();
                     } else {
-                        $result[$name] = $this->$method;
+                        $value = $this->$method;
+                    }
+                    if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
+                        $result[$name] = $value;
                     }
                 }
             }
