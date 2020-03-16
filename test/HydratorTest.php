@@ -16,12 +16,14 @@ class HydratorTest extends TestCase
             "email" => "jean@email.com",
             "genre" => "male",
             "type"  => "contact",
-            "cardId"=> null,
+            "cardId" => null,
+            "decisionMaker" => true,
         ];
         $user = new User();
         $user->setId(1);
         $user->setName("Jean");
         $user->setEmail("jean@email.com");
+        $user->setDecisionMaker(true);
         $this->assertEquals($data, $user->toArray());
         $this->assertNotEquals($data, $user->toArray(false, false));
     }
@@ -37,17 +39,20 @@ class HydratorTest extends TestCase
             "genre" => "male",
             "type"  => "contact",
             "cardId"=> null,
+            "decisionMaker" => true,
         ];
         $user = new User();
         $user->setId(1);
         $user->setName("Jean");
         $user->setEmail("jean@email.com");
+        $user->setDecisionMaker(true);
         $this->assertEquals(
             [
                 "name"  => "Jean",
                 "email" => "jean@email.com",
                 "genre" => "male",
                 "type"  => "contact",
+                "decisionMaker" => true,
             ],
             $user->toArray(true)
         );
@@ -64,14 +69,16 @@ class HydratorTest extends TestCase
             "email" => "jean@email.com",
             "type"  => "contact",
             "cardId"=> null,
+            "decisionMaker" => true,
         ];
         $user = new User();
         $user->setAccessorOnly(true);
         $user->setId(1);
         $user->setName("Jean");
         $user->setEmail("jean@email.com");
+        $user->setDecisionMaker(true);
         $this->assertEquals($data, $user->toArray());
-        $this->assertEquals($data, $user->toArray(), false, false);
+        $this->assertNotEquals($data, $user->toArray(false, false));
     }
 
     /**
@@ -86,6 +93,7 @@ class HydratorTest extends TestCase
             "genre" => "female",
             "type"  => "contact",
             "cardId"=> null,
+            "decisionMaker" => true,
         ];
         $user = new User();
         $user->hydrate($data);
@@ -102,9 +110,10 @@ class HydratorTest extends TestCase
             "id"    => 1,
             "name"  => "Sonia",
             "email" => "sonia@email.com",
-            "genre" => "male",
+            "genre" => "female",
             "type"  => "contact",
             "cardId"=> null,
+            "decisionMaker" => true,
         ];
         $user = new User();
         $user->setMutatorOnly(true);
@@ -114,6 +123,7 @@ class HydratorTest extends TestCase
             "email" => "sonia@email.com",
             "genre" => "female",
             "type"  => "contact",
+            "decisionMaker" => true,
         ]);
         $this->assertEquals($data, $user->toArray());
         $this->assertNotEquals($data, $user->toArray(false, false));

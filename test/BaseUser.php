@@ -65,5 +65,4 @@ class BaseUser
         $this->cardId = $cardId;
         return $this;
     }
-
 }

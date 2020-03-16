@@ -29,6 +29,12 @@ class User extends BaseUser
      */
     private $genre;
 
+    /**
+     * @var bool
+     * @DataProperty
+     */
+    private $decisionMaker;
+
     public function __construct()
     {
         parent::__construct();
@@ -86,6 +92,23 @@ class User extends BaseUser
     public function setEmail(string $email): User
     {
         $this->email = $email;
+        return $this;
+    }
+    /**
+     * @return bool|null
+     */
+    public function isDecisionMaker(): ?bool
+    {
+        return $this->decisionMaker;
+    }
+
+    /**
+     * @param bool $decisionMaker
+     * @return BaseUser
+     */
+    public function setDecisionMaker(bool $decisionMaker): BaseUser
+    {
+        $this->decisionMaker = $decisionMaker;
         return $this;
     }
 }

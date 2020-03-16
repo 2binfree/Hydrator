@@ -18,6 +18,14 @@ trait Hydrator
     /** @var bool */
     private $___hydratorMutatorOnly = false;
 
+    /** @var array */
+    private $___hydratorMethods = [
+        ["type" => "getter", "prefix" => "get"],
+        ["type" => "getter", "prefix" => "is"],
+        ["type" => "setter", "prefix" => "set"],
+    ];
+
+
     /**
      * @throws ReflectionException
      */
@@ -35,25 +43,25 @@ trait Hydrator
             $name = $property->getName();
             $comment = $property->getDocComment();
             if (false === strpos($name, $this->___hydratorFootPrint)) {
-                $getMethod = "get" . ucfirst($name);
-                $setMethod = "set" . ucfirst($name);
                 if (false !== strpos($comment, "@DataProperty")) {
                     $this->___hydratorObjectProperties[$name]["type"] = "@DataProperty";
                 } else {
                     $this->___hydratorObjectProperties[$name]["type"] = "undefined";
                 }
-                if ($thisClass->hasMethod($getMethod)) {
-                    $this->___hydratorObjectProperties[$name]["get"] = $getMethod;
-                } else {
-                    if (false === $this->___hydratorAccessorOnly) {
-                        $this->___hydratorObjectProperties[$name]["get"] = $name;
+                foreach ($this->___hydratorMethods as $method) {
+                    $currentMethod = $method["prefix"] . ucfirst($name);
+                    if ($thisClass->hasMethod($currentMethod)) {
+                        $this->___hydratorObjectProperties[$name][$method["type"]] = $currentMethod;
                     }
                 }
-                if ($thisClass->hasMethod($setMethod)) {
-                    $this->___hydratorObjectProperties[$name]["set"] = $setMethod;
-                } else {
-                    if (false === $this->___hydratorMutatorOnly) {
-                        $this->___hydratorObjectProperties[$name]["set"] = $name;
+                if (!isset($this->___hydratorObjectProperties[$name]["getter"])) {
+                    if (false === $this->___hydratorAccessorOnly) {
+                        $this->___hydratorObjectProperties[$name]["getter"] = $name;
+                    }
+                }
+                if (!isset($this->___hydratorObjectProperties[$name]["setter"])) {
+                    if (false === $this->___hydratorAccessorOnly) {
+                        $this->___hydratorObjectProperties[$name]["setter"] = $name;
                     }
                 }
             }
@@ -92,12 +100,17 @@ trait Hydrator
         }
         foreach ($data as $key => $value) {
             if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
-                if (isset($this->___hydratorObjectProperties[$key]["set"])) {
-                    $method = $this->___hydratorObjectProperties[$key]["set"];
-                    if ("set" === substr($method, 0, 3)) {
-                        $this->$method($value);
-                    } else {
-                        $this->$method = $value;
+                foreach ($this->___hydratorMethods as $method) {
+                    if ($method["type"] === "setter") {
+                        if (isset($this->___hydratorObjectProperties[$key][$method["type"]])) {
+                            $currentMethod = $this->___hydratorObjectProperties[$key][$method["type"]];
+                            if ($method["prefix"] === substr($currentMethod, 0, strlen($method["prefix"]))) {
+                                $this->$currentMethod($value);
+                            } else {
+                                $this->$currentMethod = $value;
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -118,15 +131,26 @@ trait Hydrator
         }
         foreach ($this->___hydratorObjectProperties as $name => $attributes) {
             if (false === $dataOnly || "@DataProperty" === $attributes["type"]) {
-                if (isset($attributes["get"])) {
-                    $method = $attributes["get"];
-                    if ("get" === substr($method, 0, 3)) {
-                        $value = $this->$method();
-                    } else {
-                        $value = $this->$method;
-                    }
-                    if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
-                        $result[$name] = $value;
+                foreach ($this->___hydratorMethods as $method) {
+                    if ($method["type"] === "getter") {
+                        if (isset($attributes[$method["type"]])) {
+                            $currentMethod = $attributes[$method["type"]];
+                            $found = false;
+                            foreach ($this->___hydratorMethods as $checkMethod) {
+                                if ($checkMethod["prefix"] === substr($currentMethod, 0, strlen($checkMethod["prefix"]))) {
+                                    $value = $this->$currentMethod();
+                                    $found = true;
+                                    break;
+                                }
+                            }
+                            if (!$found) {
+                                $value = $this->$currentMethod;
+                            }
+                            if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
+                                $result[$name] = $value;
+                            }
+                            break;
+                        }
                     }
                 }
             }
