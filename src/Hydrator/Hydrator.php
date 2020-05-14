@@ -2,6 +2,7 @@
 
 namespace ToBinFree\Hydrator;
 
+use ReflectionClass;
 use ReflectionException;
 
 trait Hydrator
@@ -25,14 +26,13 @@ trait Hydrator
         ["type" => "setter", "prefix" => "set"],
     ];
 
-
     /**
      * @throws ReflectionException
      */
     private function initMethods()
     {
         $this->___hydratorObjectProperties = [];
-        $thisClass = new \ReflectionClass($this);
+        $thisClass = new ReflectionClass($this);
         $properties = $thisClass->getProperties();
         $parent = $thisClass->getParentClass();
         while (false !== $parent) {
@@ -136,15 +136,16 @@ trait Hydrator
                         if (isset($attributes[$method["type"]])) {
                             $currentMethod = $attributes[$method["type"]];
                             $found = false;
+                            $value = null;
                             foreach ($this->___hydratorMethods as $checkMethod) {
                                 if ($checkMethod["prefix"] === substr($currentMethod, 0, strlen($checkMethod["prefix"]))) {
-                                    $value = $this->$currentMethod();
+                                    $value = isset($this->$name) ? $this->$currentMethod() : null;
                                     $found = true;
                                     break;
                                 }
                             }
                             if (!$found) {
-                                $value = $this->$currentMethod;
+                                $value = (isset($this->$name)) ? $this->$currentMethod : null;
                             }
                             if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
                                 $result[$name] = $value;
