@@ -52,6 +52,7 @@ trait Hydrator
                     $currentMethod = $method["prefix"] . ucfirst($name);
                     if ($thisClass->hasMethod($currentMethod)) {
                         $this->___hydratorObjectProperties[$name][$method["type"]] = $currentMethod;
+                        break;
                     }
                 }
                 if (!isset($this->___hydratorObjectProperties[$name]["getter"])) {
