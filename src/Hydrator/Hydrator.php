@@ -7,29 +7,40 @@ use ReflectionException;
 
 trait Hydrator
 {
-    /** @var string */
-    private $___hydratorFootPrint = "___hydrator";
-
-    /** @var array */
-    private $___hydratorObjectProperties = [];
-
-    /** @var bool */
-    private $___hydratorAccessorOnly = false;
-
-    /** @var bool */
-    private $___hydratorMutatorOnly = false;
-
-    /** @var array */
-    private $___hydratorMethods = [
+    private string $___hydratorFootPrint = "___hydrator";
+    private array $___hydratorObjectProperties = [];
+    private bool $___hydratorAccessorOnly = false;
+    private bool $___hydratorMutatorOnly = false;
+    private array $___hydratorMethods = [
         ["type" => "getter", "prefix" => "get"],
         ["type" => "getter", "prefix" => "is"],
         ["type" => "setter", "prefix" => "set"],
     ];
 
-    /**
-     * @throws ReflectionException
-     */
-    private function initMethods()
+    private function ___hasAttribute(array $attributes, string $attributeName): bool
+    {
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === $attributeName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function ___hasMethod(ReflectionClass $reflectionClass, string $name): bool
+    {
+        $result = false;
+        $parent = $reflectionClass->getParentClass();
+        if (false !== $parent) {
+            $result = $this->___hasMethod($parent, $name);
+        }
+        if ($reflectionClass->hasMethod($name)) {
+            return true;
+        }
+        return $result;
+    }
+
+    private function initMethods(): void
     {
         $this->___hydratorObjectProperties = [];
         $thisClass = new ReflectionClass($this);
@@ -41,27 +52,26 @@ trait Hydrator
         }
         foreach ($properties as $property) {
             $name = $property->getName();
-            $comment = $property->getDocComment();
-            if (false === strpos($name, $this->___hydratorFootPrint)) {
-                if (false !== strpos($comment, "@DataProperty")) {
+            if (!str_contains($name, $this->___hydratorFootPrint)) {
+                if ($this->___hasAttribute($property->getAttributes(), DataProperty::class)) {
                     $this->___hydratorObjectProperties[$name]["type"] = "@DataProperty";
                 } else {
                     $this->___hydratorObjectProperties[$name]["type"] = "undefined";
                 }
                 foreach ($this->___hydratorMethods as $method) {
                     $currentMethod = $method["prefix"] . ucfirst($name);
-                    if ($thisClass->hasMethod($currentMethod)) {
+                    if ($this->___hasMethod($thisClass, $currentMethod)) {
                         $this->___hydratorObjectProperties[$name][$method["type"]] = $currentMethod;
                         break;
                     }
                 }
                 if (!isset($this->___hydratorObjectProperties[$name]["getter"])) {
-                    if (false === $this->___hydratorAccessorOnly) {
+                    if (!$this->___hydratorAccessorOnly) {
                         $this->___hydratorObjectProperties[$name]["getter"] = $name;
                     }
                 }
                 if (!isset($this->___hydratorObjectProperties[$name]["setter"])) {
-                    if (false === $this->___hydratorAccessorOnly) {
+                    if (!$this->___hydratorAccessorOnly) {
                         $this->___hydratorObjectProperties[$name]["setter"] = $name;
                     }
                 }
@@ -69,43 +79,30 @@ trait Hydrator
         }
     }
 
-    /**
-     * @param bool $value
-     * @return $this
-     */
-    public function setMutatorOnly(bool $value)
+    public function setMutatorOnly(bool $value): static
     {
         $this->___hydratorMutatorOnly = $value;
         return $this;
     }
 
-    /**
-     * @param bool $value
-     * @return $this
-     */
-    public function setAccessorOnly(bool $value)
+    public function setAccessorOnly(bool $value): static
     {
         $this->___hydratorAccessorOnly = $value;
         return $this;
     }
 
-    /**
-     * @param array $data
-     * @param bool $withNullValue
-     * @throws ReflectionException
-     */
     public function hydrate(array $data, $withNullValue = true):void
     {
         if (empty($this->___hydratorObjectProperties)) {
             $this->initMethods();
         }
         foreach ($data as $key => $value) {
-            if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
+            if ($withNullValue || !is_null($value)) {
                 foreach ($this->___hydratorMethods as $method) {
                     if ($method["type"] === "setter") {
                         if (isset($this->___hydratorObjectProperties[$key][$method["type"]])) {
                             $currentMethod = $this->___hydratorObjectProperties[$key][$method["type"]];
-                            if ($method["prefix"] === substr($currentMethod, 0, strlen($method["prefix"]))) {
+                            if (str_starts_with($currentMethod, $method["prefix"])) {
                                 $this->$currentMethod($value);
                             } else {
                                 $this->$currentMethod = $value;
@@ -124,14 +121,14 @@ trait Hydrator
      * @return array
      * @throws ReflectionException
      */
-    public function toArray(bool $dataOnly = false, $withNullValue = true):array
+    public function toArray(bool $dataPropertyOnly = false, $withNullValue = true):array
     {
         $result = [];
         if (empty($this->___hydratorObjectProperties)) {
             $this->initMethods();
         }
         foreach ($this->___hydratorObjectProperties as $name => $attributes) {
-            if (false === $dataOnly || "@DataProperty" === $attributes["type"]) {
+            if (!$dataPropertyOnly || "@DataProperty" === $attributes["type"]) {
                 foreach ($this->___hydratorMethods as $method) {
                     if ($method["type"] === "getter") {
                         if (isset($attributes[$method["type"]])) {
@@ -139,16 +136,16 @@ trait Hydrator
                             $found = false;
                             $value = null;
                             foreach ($this->___hydratorMethods as $checkMethod) {
-                                if ($checkMethod["prefix"] === substr($currentMethod, 0, strlen($checkMethod["prefix"]))) {
-                                    $value = isset($this->$name) ? $this->$currentMethod() : null;
+                                if (str_starts_with($currentMethod, $checkMethod["prefix"])) {
+                                    $value = $this->$currentMethod() ?? null;
                                     $found = true;
                                     break;
                                 }
                             }
                             if (!$found) {
-                                $value = (isset($this->$name)) ? $this->$currentMethod : null;
+                                $value = $this->$name ?? null;
                             }
-                            if (true === $withNullValue || (false === $withNullValue && !is_null($value))) {
+                            if ($withNullValue || !is_null($value)) {
                                 $result[$name] = $value;
                             }
                             break;

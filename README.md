@@ -5,11 +5,19 @@ Use the PHP trait to not block inheritance on your classes.
 
 ## ChangeLog
 
-* 0.1.0 : initial version
-* 0.2.0 : add support of properties of all parent classes
-* 0.3.0 : add null properties filter
-* 0.4.0 : add boolean getter "is" support
- 
+* 0.1.0
+  * initial version
+* 0.2.0
+  * add support of properties of all parent classes
+* 0.3.0
+  * add null properties filter
+* 0.4.0
+  * add boolean getter "is" support
+* 0.5.0
+  * change required php version to php 8.1
+  * use Attribute rather than php doc for annotation
+  * fix getter and setter detection from parent class
+                  
 #### Installation : 
 
 composer require tobinfree/hydrator
@@ -24,20 +32,11 @@ Class User
 {
     use Hydrator;
 
-    /**
-    * @var int
-    */
-    private $id;
+    private int $id;
 
-    /**
-    * @var string
-    */
-    private $name;
+    private string $name;
 
-    /**
-    * @var string
-    */
-    private $email;
+    private string $email;
     ...
 }
   
@@ -66,22 +65,13 @@ Class User
 {
     use Hydrator;
     
-    /**
-    * @var int
-    */
-    private $id
+    private int $id
 
-    /**
-    * @var string
-    * @DataProperty
-    */
-    private $name;
+    #[DataProperty]
+    private string $name;
 
-    /**
-    * @var string
-    * @DataProperty
-    */
-    private $email;
+    #[DataProperty]
+    private string $email;
     ...
 }
 ```

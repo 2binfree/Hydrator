@@ -1,7 +1,9 @@
 <?php
 
+namespace ToBinFree\Test;
+
 use PHPUnit\Framework\TestCase;
-use ToBinFree\Test\User;
+use ReflectionException;
 
 class HydratorTest extends TestCase
 {
@@ -33,14 +35,6 @@ class HydratorTest extends TestCase
      */
     public function testToArrayData()
     {
-        $data = [
-            "name"  => "Jean",
-            "email" => "jean@email.com",
-            "genre" => "male",
-            "type"  => "contact",
-            "cardId"=> null,
-            "decisionMaker" => true,
-        ];
         $user = new User();
         $user->setId(1);
         $user->setName("Jean");
@@ -53,6 +47,7 @@ class HydratorTest extends TestCase
                 "genre" => "male",
                 "type"  => "contact",
                 "decisionMaker" => true,
+                "cardId" => null,
             ],
             $user->toArray(true)
         );

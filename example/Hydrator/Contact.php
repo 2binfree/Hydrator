@@ -2,70 +2,47 @@
 
 namespace ToBinFree\Hydrator;
 
-require __DIR__.'/../vendor/autoload.php';
+use Exception;
+use ReflectionException;
+
+require __DIR__.'/../../vendor/autoload.php';
 
 class Contact
 {
     use Hydrator;
 
-    /**
-     * @var int
-     */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @DataProperty
-     */
-    private $name;
+    #[DataProperty]
+    private string $name;
 
-    /**
-     * @var string
-     * @DataProperty
-     */
-    private $email;
+    #[DataProperty]
+    private string $email;
 
-    /**
-     * @var string
-     * @DataProperty
-     */
-    private $genre;
+    #[DataProperty]
+    private string $genre;
 
     public function __construct()
     {
         $this->genre = "male";
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return $this
-     */
     public function setName(string $name): Contact
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     * @return $this
-     */
     public function setEmail(string $email): Contact
     {
         $this->email = $email;
@@ -73,7 +50,6 @@ class Contact
     }
 
 }
-
 
 $user = new Contact();
 $user->setEmail("eric@email.com");
@@ -85,6 +61,10 @@ $data = [
     "genre" => "female"
 ];
 
-var_dump($user->toArray());
-$user->hydrate($data);
-var_dump($user->toArray());
+try {
+    var_dump($user->toArray());
+    $user->hydrate($data);
+    var_dump($user->toArray());
+} catch (ReflectionException|Exception $e) {
+    echo $e->getMessage();
+}
